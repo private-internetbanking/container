@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SteelBox | Container Types</title>
+    <style>
+      :root {
+        --bg: #06121a; --bg-2: #0d1c2a; --panel: rgba(15, 25, 36, 0.85); --panel-strong: #0d1a25; --gold: #d8b36a; --gold-soft: #f3d9a2; --primary: #4c8dfd; --primary-strong: #2b6eea; --steel: #edf5ff; --muted: #b1c0d1; --line: rgba(255,255,255,0.09); --shadow: 0 26px 60px rgba(2,7,14,0.45);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--steel); background: radial-gradient(circle at top left, rgba(76,141,253,0.24), transparent 22%), linear-gradient(180deg, #06121a 0%, #0a1825 40%, #0f1f2d 100%); }
+      a { text-decoration: none; }
+      .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+      .topbar { padding: 22px 0 10px; }
+      .nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; background: rgba(8,17,24,0.72); border: 1px solid var(--line); border-radius: 20px; padding: 14px 18px; box-shadow: var(--shadow); backdrop-filter: blur(12px); }
+      .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.05em; color: var(--steel); }
+      .brand-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(135deg, var(--gold), #f0c77c); color: #101d2c; font-weight: 900; box-shadow: 0 12px 20px rgba(216,179,106,0.25); }
+      .nav-links { display: flex; gap: 24px; align-items: center; }
+      .nav-links a { color: var(--muted); font-weight: 600; }
+      .nav-links a:hover { color: var(--steel); }
+      .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-weight: 700; border: 1px solid transparent; transition: all 0.2s ease; }
+      .btn:hover { transform: translateY(-2px); }
+      .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-strong)); color: white; box-shadow: 0 18px 32px rgba(43,110,234,0.38); }
+      .section { padding: 40px 0 70px; }
+      .page-head { padding: 30px 0 10px; }
+      .page-head h1 { margin: 14px 0 12px; font-size: clamp(2.2rem, 4vw, 3.6rem); letter-spacing: -0.05em; color: #f4f9ff; }
+      .crumb { color: var(--muted); font-size: 0.9rem; }
+      .types-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px; }
+      .type-card { background: rgba(10,18,26,0.78); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: var(--shadow); }
+      .type-visual { height: 160px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(135deg, rgba(76,141,253,0.12), rgba(216,179,106,0.05)); display: grid; place-items: center; margin-bottom: 18px; }
+      .product-thumb { width: 150px; height: 100px; object-fit: cover; display: block; border-radius: 8px; box-shadow: 0 12px 24px rgba(10, 17, 23, 0.3); }
+      .mini-box { width: 72%; height: 80px; border-radius: 14px; background: linear-gradient(135deg, #dfeaf8, #b7cbeb); position: relative; box-shadow: inset 0 0 0 8px rgba(11,27,40,0.82); }
+      .mini-box::before { content: ""; position: absolute; inset: 10px; border: 2px solid rgba(11,27,40,0.45); border-radius: 8px; }
+      .type-card h3 { margin: 0 0 10px; font-size: 1.5rem; color: #f5fbff; }
+      .type-card p { margin: 0 0 18px; line-height: 1.7; color: var(--muted); }
+      .tags { display: flex; gap: 10px; flex-wrap: wrap; }
+      .tags span { background: rgba(255,255,255,0.04); color: var(--steel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; font-size: 0.74rem; font-weight: 700; }
+      footer { background: #08131b; color: rgba(255,255,255,0.8); padding: 30px 0 60px; border-top: 1px solid var(--line); }
+      .footer-wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center; }
+      .footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
+      .footer-links a { color: rgba(255,255,255,0.75); }
+      @media (max-width: 800px) { .nav { flex-wrap: wrap; justify-content: center; } .nav-links { flex-wrap: wrap; justify-content: center; } .types-grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <nav class="nav" aria-label="Main navigation">
+          <a class="brand" href="container.html" aria-label="SteelBox home">
+            <div class="brand-mark">S</div>
+            <span>SteelBox</span>
+          </a>
+          <div class="nav-links">
+            <a href="inventory.html">Inventory</a>
+            <a href="types.html">Types</a>
+            <a href="why-us.html">Why us</a>
+            <a href="contact.html">Contact</a>
+            <a href="browse-stock.html">Browse stock</a>
+          </div>
+          <a href="browse-stock.html" class="btn btn-primary">Browse stock</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-head">
+        <div class="container">
+          <div class="crumb">Home / Container Types</div>
+          <h1>Container types for every job</h1>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="types-grid">
+            <article class="type-card">
+              <div class="type-visual"><img src="20ft container.jpg" alt="20ft Standard container" class="product-thumb" /></div>
+              <h3>20ft Standard</h3>
+              <p>Compact and dependable for storage, site operations, and mobile workspace needs.</p>
+              <div class="tags"><span>Storage</span><span>Compact</span></div>
+            </article>
+
+            <article class="type-card">
+              <div class="type-visual"><img src="40ft container.jpg" alt="40ft Standard container" class="product-thumb" /></div>
+              <h3>40ft Standard</h3>
+              <p>Best for larger inventory, equipment storage, and commercial projects requiring more room.</p>
+              <div class="tags"><span>Large</span><span>Heavy duty</span></div>
+            </article>
+
+            <article class="type-card">
+              <div class="type-visual"><img src="40ft high cube.jpg" alt="High Cube container" class="product-thumb" /></div>
+              <h3>High Cube</h3>
+              <p>Extra height for taller goods, custom interiors, and easier access during installation.</p>
+              <div class="tags"><span>Extra height</span><span>Custom fit</span></div>
+            </article>
+
+            <article class="type-card">
+              <div class="type-visual"><img src="20ft open sided container.jpg" alt="Open Side container" class="product-thumb" /></div>
+              <h3>Open Side</h3>
+              <p>Open-access design for loading equipment, tools, and materials with easier handling.</p>
+              <div class="tags"><span>Quick access</span><span>Flexible use</span></div>
+            </article>
+
+            <article class="type-card">
+              <div class="type-visual"><img src="40ft reefer containers.jpg" alt="Reefer Unit container" class="product-thumb" /></div>
+              <h3>Reefer</h3>
+              <p>Temperature-controlled storage for food, pharmaceuticals, and sensitive cargo.</p>
+              <div class="tags"><span>Cold chain</span><span>Insulated</span></div>
+            </article>
+
+            <article class="type-card">
+              <div class="type-visual"><img src="20ft office unit.jpg" alt="Office Unit container" class="product-thumb" /></div>
+              <h3>Office Unit</h3>
+              <p>Turnkey office or accommodation solution fitted with insulation and built-in fixtures.</p>
+              <div class="tags"><span>Office</span><span>Modular</span></div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-wrap">
+        <div class="brand" style="color: white;">
+          <div class="brand-mark">S</div>
+          <span>SteelBox</span>
+        </div>
+        <div class="footer-links">
+          <a href="inventory.html">Inventory</a>
+          <a href="types.html">Types</a>
+          <a href="why-us.html">Why us</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

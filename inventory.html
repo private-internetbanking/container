@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SteelBox | Inventory</title>
+    <style>
+      :root {
+        --bg: #06121a; --bg-2: #0d1c2a; --panel: rgba(15, 25, 36, 0.85); --panel-strong: #0d1a25; --panel-soft: rgba(136, 169, 197, 0.12); --gold: #d8b36a; --gold-soft: #f3d9a2; --primary: #4c8dfd; --primary-strong: #2b6eea; --steel: #edf5ff; --muted: #b1c0d1; --line: rgba(255,255,255,0.09); --shadow: 0 26px 60px rgba(2,7,14,0.45); --success: #74d7b2;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--steel); background:
+          radial-gradient(circle at top left, rgba(76, 141, 253, 0.24), transparent 22%),
+          linear-gradient(180deg, #06121a 0%, #0a1825 40%, #0f1f2d 100%);
+      }
+      a { text-decoration: none; }
+      .container { width: min(1200px, calc(100% - 32px)); margin: 0 auto; }
+      .topbar { padding: 22px 0 10px; }
+      .nav {
+        display: flex; align-items: center; justify-content: space-between; gap: 18px; background: rgba(8,17,24,0.72); border: 1px solid var(--line);
+        border-radius: 20px; padding: 14px 18px; box-shadow: var(--shadow); backdrop-filter: blur(12px);
+      }
+      .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: 0.05em; color: var(--steel); }
+      .brand-mark {
+        width: 40px; height: 40px; display: grid; place-items: center; border-radius: 14px; background: linear-gradient(135deg, var(--gold), #f0c77c); color: #101d2c; font-weight: 900; box-shadow: 0 12px 20px rgba(216,179,106,0.25);
+      }
+      .nav-links { display: flex; gap: 24px; align-items: center; }
+      .nav-links a { color: var(--muted); font-weight: 600; }
+      .nav-links a:hover { color: var(--steel); }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 12px; font-weight: 700; border: 1px solid transparent; transition: all 0.2s ease;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-strong)); color: white; box-shadow: 0 18px 32px rgba(43,110,234,0.38); }
+      .page-head { padding: 32px 0 10px; }
+      .page-head h1 { margin: 14px 0 12px; font-size: clamp(2.4rem, 4vw, 4rem); letter-spacing: -0.05em; color: #f4f9ff; }
+      .crumb { color: var(--muted); font-size: 0.9rem; }
+      .section { padding: 40px 0 70px; }
+      .catalog-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 22px; }
+      .product-card {
+        background: rgba(10,18,26,0.78); border: 1px solid var(--line); border-radius: 24px; padding: 18px; box-shadow: var(--shadow);
+      }
+      .product-badge { display: inline-block; padding: 7px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; }
+      .badge-stock { background: rgba(116, 215, 178, 0.14); color: var(--success); }
+      .badge-new { background: rgba(76,141,253,0.12); color: #dfeaff; }
+      .product-visual {
+        height: 170px; margin: 18px 0 16px; border-radius: 18px; border: 1px solid var(--line); background: linear-gradient(135deg, rgba(76,141,253,0.12), rgba(216,179,106,0.05)); display: grid; place-items: center;
+      }
+      .product-thumb {
+        width: 150px; height: 100px; object-fit: cover; display: block; border-radius: 8px;
+        box-shadow: 0 12px 24px rgba(10, 17, 23, 0.3);
+      }
+      .mini-box {
+        width: 66%; height: 82px; border-radius: 14px; background: linear-gradient(135deg, #dfeaf8, #b5c7e3); position: relative; box-shadow: inset 0 0 0 8px rgba(11,27,40,0.82);
+      }
+      .mini-box::before { content: ""; position: absolute; inset: 12px; border: 2px solid rgba(11,27,40,0.45); border-radius: 8px; }
+      .product-meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+      .product-meta h3 { margin: 0; font-size: 1.3rem; color: #ecf6ff; }
+      .price-tag { font-size: 1.4rem; font-weight: 800; color: var(--gold-soft); }
+      .product-card p { color: var(--muted); line-height: 1.7; margin: 10px 0 18px; }
+      .specs { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+      .specs span { background: rgba(255,255,255,0.04); color: var(--steel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 10px; font-size: 0.76rem; font-weight: 700; }
+      .product-card .btn { width: 100%; }
+      footer { background: #08131b; color: rgba(255,255,255,0.8); padding: 30px 0 60px; margin-top: 20px; border-top: 1px solid var(--line); }
+      .footer-wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center; }
+      .footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
+      .footer-links a { color: rgba(255,255,255,0.75); }
+      @media (max-width: 800px) { .catalog-grid { grid-template-columns: 1fr; } .nav { flex-wrap: wrap; justify-content: center; } .nav-links { flex-wrap: wrap; justify-content: center; } }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container">
+        <nav class="nav" aria-label="Main navigation">
+          <a class="brand" href="container.html" aria-label="SteelBox home">
+            <div class="brand-mark">S</div>
+            <span>SteelBox</span>
+          </a>
+          <div class="nav-links">
+            <a href="inventory.html">Inventory</a>
+            <a href="types.html">Types</a>
+            <a href="why-us.html">Why us</a>
+            <a href="contact.html">Contact</a>
+            <a href="browse-stock.html">Browse stock</a>
+          </div>
+          <a href="browse-stock.html" class="btn btn-primary">Browse stock</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-head">
+        <div class="container">
+          <div class="crumb">Home / Inventory</div>
+          <h1>Available stock</h1>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="catalog-grid">
+            <article class="product-card">
+              <span class="product-badge badge-stock">In stock</span>
+              <div class="product-visual"><img src="20ft container.jpg" alt="20ft Standard container" class="product-thumb" /></div>
+              <div class="product-meta"><h3>20ft Standard</h3><span class="price-tag">$2,150</span></div>
+              <p>Ideal for storage, transport support, and secure on-site use.</p>
+              <div class="specs"><span>20ft</span><span>Windproof</span></div>
+              <a href="contact.html" class="btn btn-primary">Buy now</a>
+            </article>
+
+            <article class="product-card">
+              <span class="product-badge badge-new">Best seller</span>
+              <div class="product-visual"><img src="40ft container.jpg" alt="40ft Standard container" class="product-thumb" /></div>
+              <div class="product-meta"><h3>40ft Standard</h3><span class="price-tag">$3,850</span></div>
+              <p>High-capacity unit for commercial projects and long-term storage.</p>
+              <div class="specs"><span>40ft</span><span>Heavy duty</span></div>
+              <a href="contact.html" class="btn btn-primary">Buy now</a>
+            </article>
+
+            <article class="product-card">
+              <span class="product-badge badge-stock">Ready</span>
+              <div class="product-visual"><img src="40ft high cube.jpg" alt="High Cube container" class="product-thumb" /></div>
+              <div class="product-meta"><h3>High Cube</h3><span class="price-tag">$4,250</span></div>
+              <p>Extra headroom for workshops, storage, and custom-fit installations.</p>
+              <div class="specs"><span>9.5ft high</span><span>Extra room</span></div>
+              <a href="contact.html" class="btn btn-primary">Buy now</a>
+            </article>
+
+            <article class="product-card">
+              <span class="product-badge badge-new">Popular</span>
+              <div class="product-visual"><img src="20ft open sided container.jpg" alt="Open Side container" class="product-thumb" /></div>
+              <div class="product-meta"><h3>Open Side</h3><span class="price-tag">$4,900</span></div>
+              <p>Designed for quick access and convenient loading of equipment and goods.</p>
+              <div class="specs"><span>Easy access</span><span>Flexible use</span></div>
+              <a href="contact.html" class="btn btn-primary">Buy now</a>
+            </article>
+
+            <article class="product-card">
+              <span class="product-badge badge-stock">New arrival</span>
+              <div class="product-visual"><img src="40ft reefer containers.jpg" alt="Reefer Unit container" class="product-thumb" /></div>
+              <div class="product-meta"><h3>Reefer Unit</h3><span class="price-tag">$6,400</span></div>
+              <p>Temperature-controlled unit for food, medicine, and sensitive cargo.</p>
+              <div class="specs"><span>Cold chain</span><span>Insulated</span></div>
+              <a href="contact.html" class="btn btn-primary">Buy now</a>
+            </article>
+
+            <article class="product-card">
+              <span class="product-badge badge-new">Custom</span>
+              <div class="product-visual"><img src="20ft office unit.jpg" alt="Office Unit container" class="product-thumb" /></div>
+              <div class="product-meta"><h3>Office Unit</h3><span class="price-tag">$5,900</span></div>
+              <p>Modern container office with windows, insulation, and ready-to-use layout.</p>
+              <div class="specs"><span>Office fit</span><span>Workshop ready</span></div>
+              <a href="contact.html" class="btn btn-primary">Buy now</a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-wrap">
+        <div class="brand" style="color: white;">
+          <div class="brand-mark">S</div>
+          <span>SteelBox</span>
+        </div>
+        <div class="footer-links">
+          <a href="inventory.html">Inventory</a>
+          <a href="types.html">Types</a>
+          <a href="why-us.html">Why us</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

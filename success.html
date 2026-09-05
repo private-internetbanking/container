@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SteelBox | Order Confirmed</title>
+    <style>
+      :root {
+        --bg: #070d13;
+        --panel: rgba(13, 21, 29, 0.96);
+        --gold: #d6ad64;
+        --gold-soft: #f1d7a0;
+        --primary: #5b8df6;
+        --primary-strong: #2b6eea;
+        --steel: #edf5ff;
+        --muted: #a7b6c9;
+        --line: rgba(255,255,255,0.08);
+        --success: #73d8b3;
+        --shadow: 0 28px 65px rgba(3, 7, 12, 0.52);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; font-family: Arial, Helvetica, sans-serif; color: var(--steel);
+        background: radial-gradient(circle at top left, rgba(91,141,246,0.24), transparent 18%), linear-gradient(180deg, #070d13 0%, #0a141d 26%, #0d1a27 100%);
+        min-height: 100vh; display: grid; place-items: center; padding: 26px;
+      }
+      .success-card {
+        width: min(760px, 100%); background: rgba(11, 17, 23, 0.97); border: 1px solid var(--line); border-radius: 30px;
+        box-shadow: var(--shadow); padding: 36px 28px; text-align: center; position: relative; overflow: hidden;
+      }
+      .success-card::before {
+        content: ""; position: absolute; inset: 0 auto auto 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(214,173,100,0.75), transparent);
+      }
+      .status-badge {
+        display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 16px; border-radius: 999px;
+        background: rgba(115,216,179,0.12); border: 1px solid rgba(115,216,179,0.4); color: #dffef3; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 18px;
+      }
+      .status-badge::before {
+        content: "✓"; width: 22px; height: 22px; display: inline-grid; place-items: center; border-radius: 50%; background: rgba(115,216,179,0.2); color: var(--success);
+      }
+      h1 { margin: 0 0 16px; font-size: clamp(2.3rem, 4vw, 4rem); letter-spacing: -0.06em; }
+      p { margin: 0 auto 22px; max-width: 620px; color: var(--muted); line-height: 1.7; }
+      .summary-box {
+        display: grid; gap: 12px; max-width: 520px; margin: 0 auto 24px; text-align: left; background: rgba(255,255,255,0.02); border: 1px solid var(--line); border-radius: 20px; padding: 18px;
+      }
+      .summary-row { display: flex; justify-content: space-between; gap: 14px; color: var(--muted); }
+      .summary-row strong { color: var(--steel); }
+      .button-row { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; padding: 13px 22px; border-radius: 12px; font-weight: 700; text-decoration: none; border: 1px solid transparent; cursor: pointer;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--primary-strong)); color: white; box-shadow: 0 18px 32px rgba(43,110,234,0.35);
+      }
+      .btn-secondary {
+        background: rgba(255,255,255,0.03); border-color: var(--line); color: var(--steel);
+      }
+      @media (max-width: 640px) { .button-row { flex-direction: column; } .btn { width: 100%; } }
+    </style>
+  </head>
+  <body>
+    <div class="success-card">
+      <div class="status-badge">Order confirmed</div>
+      <h1>Thank you, <span id="customerName">Customer</span>.</h1>
+      <p>Your container request has been received and our team is preparing a tailored quote and delivery plan for your site.</p>
+
+      <div class="summary-box">
+        <div class="summary-row"><span>Units requested</span><strong id="itemCount">0</strong></div>
+        <div class="summary-row"><span>Estimated total</span><strong id="totalValue">$0</strong></div>
+        <div class="summary-row"><span>Expected follow-up</span><strong>Within 24 hours</strong></div>
+      </div>
+
+      <div class="button-row">
+        <a href="browse-stock.html" class="btn btn-primary">Continue shopping</a>
+        <a href="contact.html" class="btn btn-secondary">Contact sales</a>
+      </div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const customerName = params.get('name') || 'Customer';
+      const itemCount = params.get('items') || '0';
+      const totalValue = params.get('total') || '0';
+
+      document.getElementById('customerName').textContent = customerName;
+      document.getElementById('itemCount').textContent = itemCount;
+      document.getElementById('totalValue').textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(Number(totalValue));
+    </script>
+  </body>
+</html>
