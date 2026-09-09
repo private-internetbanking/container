@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Private SteelBox Container Co. administration panel.">
+  <title>Admin | SteelBox Container Co.</title>
+  <link rel="stylesheet" href="inner.css">
+  <style>
+    .admin-main { padding:70px 0 110px; }
+    .admin-grid { display:grid; grid-template-columns:.8fr 1.2fr; gap:28px; align-items:start; }
+    .admin-panel { padding:28px; border:1px solid var(--line); background:var(--panel); }
+    .admin-panel h2 { margin:10px 0 8px; font:600 clamp(2rem,4vw,3.5rem)/.98 'Playfair Display',serif; letter-spacing:-.06em; }
+    .admin-panel p { color:var(--muted); font-size:.82rem; line-height:1.65; }
+    .admin-form { display:grid; gap:15px; margin-top:25px; }
+    .admin-form .field { display:grid; gap:7px; }
+    .admin-form label { color:var(--muted); font-size:.67rem; font-weight:800; letter-spacing:.04em; }
+    .admin-form input,.admin-form textarea { width:100%; border:1px solid var(--line); border-radius:0; padding:13px; color:var(--ink); background:#0b100e; font-size:.82rem; }
+    .admin-form textarea { min-height:95px; resize:vertical; }
+    .admin-form input:focus,.admin-form textarea:focus { outline:2px solid rgba(217,174,98,.4); border-color:var(--gold); }
+    .admin-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:5px; }
+    .admin-actions .button { border:0; }
+    .button-muted { color:var(--ink); border:1px solid var(--line) !important; background:transparent !important; }
+    .button-muted:hover { border-color:var(--gold) !important; color:var(--gold-soft); }
+    .login-shell { width:min(520px,100%); margin:0 auto; }
+    .login-note { min-height:1.2em; margin:16px 0 0; color:var(--danger) !important; }
+    .admin-toolbar { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:20px; }
+    .admin-toolbar h2 { margin:0; font-size:2rem; }
+    .inventory-list { display:grid; gap:10px; }
+    .inventory-item { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; padding:16px; border:1px solid var(--line); background:#0d1210; }
+    .inventory-item h3 { margin:0 0 5px; font-size:.92rem; }
+    .inventory-item p { margin:0; color:var(--muted); font:500 .68rem 'DM Mono',monospace; }
+    .inventory-item small { display:block; margin-top:7px; color:var(--gold); font-size:.68rem; }
+    .item-actions { display:flex; gap:8px; }
+    .item-actions button { padding:9px 12px; border:1px solid var(--line); color:var(--ink); background:transparent; font:500 .62rem 'DM Mono',monospace; }
+    .item-actions button:hover { border-color:var(--gold); color:var(--gold-soft); }
+    .empty-state { padding:24px 0; color:var(--muted); font-size:.82rem; }
+    .admin-tabs { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px; border-bottom:1px solid var(--line); padding-bottom:14px; }
+    .admin-tab { border:1px solid var(--line); padding:10px 14px; color:var(--muted); background:transparent; font:700 .68rem 'DM Mono',monospace; text-transform:uppercase; }
+    .admin-tab.active,.admin-tab:hover { border-color:var(--gold); color:var(--gold-soft); }
+    .admin-section { display:none; }
+    .admin-section.active { display:block; }
+    .shipping-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
+    .shipping-list { display:grid; gap:10px; }
+    .shipping-item { padding:16px; border:1px solid var(--line); background:#0d1210; }
+    .shipping-item h3 { margin:0 0 7px; font-size:.92rem; }
+    .shipping-item p { margin:4px 0; color:var(--muted); font-size:.72rem; }
+    .shipping-item strong { color:var(--gold-soft); }
+    .timeline { display:grid; gap:9px; margin-top:18px; }
+    .timeline-entry { padding:12px; border-left:2px solid var(--gold); background:#151a16; }
+    .timeline-entry strong { display:block; font-size:.76rem; }
+    .timeline-entry small { color:var(--muted); font:500 .63rem 'DM Mono',monospace; }
+    .admin-only { display:none; }
+    .admin-only.visible { display:block; }
+    @media (max-width:800px) { .admin-grid { grid-template-columns:1fr; } }
+    @media (max-width:560px) { .admin-main { padding:50px 0 80px; } .admin-panel { padding:22px; } .admin-toolbar { align-items:flex-start; flex-direction:column; } .inventory-item { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap nav">
+      <a class="brand" href="index.html"><span class="brand-mark">B</span> STEELBOX / CO.</a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">Public site</a>
+        <a href="browse-stock.html">Browse stock</a>
+        <a href="#shipping" id="shippingNav">Shipping</a>
+      </nav>
+      <div class="nav-actions"><button class="icon-button" id="logoutButton" type="button" hidden>EXIT</button></div>
+    </div>
+  </header>
+
+  <main class="admin-main wrap">
+    <section class="login-shell" id="loginView">
+      <div class="admin-panel">
+        <span class="page-label">Private access / SteelBox operations</span>
+        <h1 class="page-hero h1" style="margin:18px 0 0;font:700 clamp(3rem,8vw,6rem)/.9 'Playfair Display',serif;letter-spacing:-.075em;">Admin <em style="color:var(--gold);font-style:normal;">sign in.</em></h1>
+        <p>Sign in to manage the products displayed on the public collection. This demo keeps the session in this browser only.</p>
+        <form class="admin-form" id="loginForm">
+          <div class="field"><label for="username">EMAIL ADDRESS</label><input id="username" type="email" autocomplete="username" required></div>
+          <div class="field"><label for="password">PASSWORD</label><input id="password" type="password" autocomplete="current-password" required></div>
+          <button class="button" type="submit">Enter the admin desk</button>
+        </form>
+        <p class="login-note" id="loginMessage" role="alert"></p>
+      </div>
+    </section>
+
+    <section class="admin-only" id="adminView">
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button class="admin-tab active" type="button" data-section="inventory">Inventory</button>
+        <button class="admin-tab" type="button" data-section="shipping">Shipping</button>
+        <button class="admin-tab" type="button" data-section="contact">Contact</button>
+      </div>
+      <div class="admin-section active" id="inventorySection">
+      <div class="admin-grid">
+        <div class="admin-panel">
+          <span class="page-label">Inventory control</span>
+          <h2 id="formTitle">Add a product.</h2>
+          <p>Changes are saved locally and appear on the public homepage in this browser.</p>
+          <form class="admin-form" id="productForm">
+            <div class="field"><label for="productName">PRODUCT NAME</label><input id="productName" required></div>
+            <div class="field"><label for="productType">CATEGORY LABEL</label><input id="productType" placeholder="Everyday essential" required></div>
+            <div class="field"><label for="productPrice">PRICE</label><input id="productPrice" type="number" min="0" step="50" required></div>
+            <div class="field"><label for="productImage">IMAGE PATH OR URL</label><input id="productImage" placeholder="../containers.html/20ft container.jpg" required></div>
+            <div class="field"><label for="productAlt">IMAGE DESCRIPTION</label><input id="productAlt" required></div>
+            <div class="field"><label for="productText">DESCRIPTION</label><textarea id="productText" required></textarea></div>
+            <div class="admin-actions"><button class="button" type="submit" id="saveButton">Add product</button><button class="button button-muted" type="button" id="cancelButton" hidden>Cancel edit</button></div>
+          </form>
+        </div>
+        <div class="admin-panel">
+          <div class="admin-toolbar"><h2>Published products.</h2><button class="button button-muted" type="button" id="resetButton">Reset defaults</button></div>
+          <div class="inventory-list" id="inventoryList"></div>
+        </div>
+      </div>
+      </div>
+      <div class="admin-section" id="shippingSection">
+        <div class="shipping-grid">
+          <div class="admin-panel">
+            <span class="page-label">Shipping control</span>
+            <h2 id="shippingFormTitle">Create a shipment.</h2>
+            <p>Create a customer-facing tracking record, then update its status and location as delivery progresses.</p>
+            <form class="admin-form" id="shippingForm">
+              <div class="field"><label for="shippingReference">ORDER REFERENCE</label><input id="shippingReference" placeholder="AUR-2048" required></div>
+              <div class="field"><label for="shippingLabel">SHIPMENT LABEL</label><input id="shippingLabel" placeholder="SteelBox delivery / phase one" required></div>
+              <div class="field"><label for="shippingCarrier">CARRIER</label><input id="shippingCarrier" placeholder="SteelBox Logistics" required></div>
+              <div class="field"><label for="shippingStatus">CURRENT STATUS</label><input id="shippingStatus" placeholder="In transit" required></div>
+              <div class="field"><label for="shippingCountry">DESTINATION COUNTRY</label><select id="shippingCountry" required><option value="United States">United States</option><option>Canada</option><option>Mexico</option><option>United Kingdom</option><option>Ireland</option><option>Australia</option><option>New Zealand</option><option>South Africa</option><option>Germany</option><option>France</option><option>Italy</option><option>Spain</option><option>Netherlands</option><option>Belgium</option><option>Switzerland</option><option>Norway</option><option>Sweden</option><option>Denmark</option><option>Finland</option><option>Poland</option><option>Portugal</option><option>Austria</option><option>Greece</option><option>Turkey</option><option>United Arab Emirates</option><option>Saudi Arabia</option><option>India</option><option>China</option><option>Japan</option><option>South Korea</option><option>Singapore</option><option>Brazil</option><option>Argentina</option><option>Chile</option><option>Colombia</option><option>Nigeria</option><option>Kenya</option><option>Egypt</option><option>Other</option></select></div>
+              <div class="field"><label for="shippingLocation">CURRENT LOCATION</label><input id="shippingLocation" placeholder="Johannesburg yard" required></div>
+              <div class="field"><label for="shippingEta">ESTIMATED ARRIVAL</label><input id="shippingEta" type="date" required></div>
+              <div class="field"><label for="shippingNote">UPDATE NOTE</label><textarea id="shippingNote" placeholder="Driver assigned, arrived at depot, delivery scheduled..." required></textarea></div>
+              <div class="admin-actions"><button class="button" type="submit" id="shippingSaveButton">Save shipment</button><button class="button button-muted" type="button" id="shippingCancelButton" hidden>Cancel edit</button></div>
+            </form>
+          </div>
+          <div class="admin-panel">
+            <div class="admin-toolbar"><h2>Shipments.</h2><button class="button button-muted" type="button" id="shippingResetButton">Clear all</button></div>
+            <div class="shipping-list" id="shippingList"></div>
+          </div>
+        </div>
+      </div>
+      <div class="admin-section" id="contactSection">
+        <div class="admin-panel">
+          <span class="page-label">Contact control</span>
+          <h2>Keep contact details current.</h2>
+          <p>These details control the WhatsApp and email buttons across the public site. Use the full international phone number, including the country code.</p>
+          <form class="admin-form" id="contactForm">
+            <div class="field"><label for="contactPhone">WHATSAPP PHONE NUMBER</label><input id="contactPhone" type="tel" placeholder="+1 541 678 675" required></div>
+            <div class="field"><label for="contactEmail">CONTACT EMAIL</label><input id="contactEmail" type="email" placeholder="steelboxservices@gmail.com" required></div>
+            <div class="admin-actions"><button class="button" type="submit">Save contact details</button></div>
+          </form>
+          <p class="login-note" id="contactMessage" role="status"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const defaultProducts = [
+      { id:'20ft', type:'Everyday essential', name:'20ft Standard', price:2150, image:'../containers.html/20ft container.jpg', alt:'Green standard shipping container', text:'A versatile footprint for secure storage, smaller sites, and practical ideas.' },
+      { id:'40ft', type:'Most requested', name:'40ft Standard', price:3850, image:'../containers.html/40ft container.jpg', alt:'Rows of large cargo containers', text:'More capacity for commercial inventory, equipment, stock, and ambitious builds.' },
+      { id:'cube', type:'Extra headroom', name:'40ft High Cube', price:4250, image:'../containers.html/40ft high cube.jpg', alt:'Blue high cube shipping container', text:'An extra foot of height for bulky goods, workshops, and comfortable fit-outs.' },
+      { id:'convert', type:'Made to order', name:'Converted Studio', price:5900, image:'../containers.html/20ft office unit.jpg', alt:'Modern converted container office', text:'A refined starting point for offices, kiosks, guest spaces, and tailored rooms.' }
+    ];
+    const productKey = 'steelbox-admin-products';
+    const shippingKey = 'steelbox-admin-shipping';
+    const contactKey = 'steelbox-contact-settings';
+    const defaultContact = { phone: '+1 541 678 675', email: 'steelboxservices@gmail.com' };
+    const authKey = 'steelbox-admin-session';
+    const loginView = document.getElementById('loginView');
+    const adminView = document.getElementById('adminView');
+    const logoutButton = document.getElementById('logoutButton');
+    const inventoryList = document.getElementById('inventoryList');
+    const productForm = document.getElementById('productForm');
+    const shippingForm = document.getElementById('shippingForm');
+    const shippingList = document.getElementById('shippingList');
+    let products = readProducts();
+    let editingId = null;
+    let shipments = readShipments();
+    let editingShipmentId = null;
+
+    function readProducts() {
+      try { return JSON.parse(localStorage.getItem(productKey)) || defaultProducts; } catch (error) { return defaultProducts; }
+    }
+
+    function saveProducts() {
+      localStorage.setItem(productKey, JSON.stringify(products));
+    }
+
+    function readShipments() {
+      try { return JSON.parse(localStorage.getItem(shippingKey)) || []; } catch (error) { return []; }
+    }
+
+    function saveShipments() {
+      localStorage.setItem(shippingKey, JSON.stringify(shipments));
+    }
+
+    function readContact() {
+      try { return { ...defaultContact, ...(JSON.parse(localStorage.getItem(contactKey)) || {}) }; } catch (error) { return defaultContact; }
+    }
+
+    function loadContactForm() {
+      const contact = readContact();
+      document.getElementById('contactPhone').value = contact.phone;
+      document.getElementById('contactEmail').value = contact.email;
+    }
+
+    function showAdmin() {
+      loginView.style.display = 'none';
+      adminView.classList.add('visible');
+      logoutButton.hidden = false;
+      renderProducts();
+      renderShipments();
+      loadContactForm();
+    }
+
+    function renderProducts() {
+      inventoryList.innerHTML = products.length ? products.map(product => `<article class="inventory-item"><div><h3>${escapeHtml(product.name)}</h3><p>${escapeHtml(product.type)} / $${Number(product.price).toLocaleString()}</p><small>${escapeHtml(product.text)}</small></div><div class="item-actions"><button type="button" data-edit="${product.id}">Edit</button><button type="button" data-delete="${product.id}">Delete</button></div></article>`).join('') : '<p class="empty-state">No products are published yet.</p>';
+    }
+
+    function escapeHtml(value) { return String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[character]); }
+
+    function clearForm() {
+      productForm.reset();
+      editingId = null;
+      document.getElementById('formTitle').textContent = 'Add a product.';
+      document.getElementById('saveButton').textContent = 'Add product';
+      document.getElementById('cancelButton').hidden = true;
+    }
+
+    function clearShippingForm() {
+      shippingForm.reset();
+      editingShipmentId = null;
+      document.getElementById('shippingFormTitle').textContent = 'Create a shipment.';
+      document.getElementById('shippingSaveButton').textContent = 'Save shipment';
+      document.getElementById('shippingCancelButton').hidden = true;
+    }
+
+    function renderShipments() {
+      shippingList.innerHTML = shipments.length ? shipments.map(shipment => `<article class="shipping-item"><h3>${escapeHtml(shipment.label)} <strong>${escapeHtml(shipment.reference)}</strong></h3><p><strong>${escapeHtml(shipment.status)}</strong> / ${escapeHtml(shipment.location)}</p><p>${escapeHtml(shipment.country || 'United States')} / ${escapeHtml(shipment.carrier)} / ETA ${escapeHtml(shipment.eta || 'Not set')}</p><div class="timeline">${shipment.updates.map(update => `<div class="timeline-entry"><strong>${escapeHtml(update.note)}</strong><small>${escapeHtml(update.date)}</small></div>`).join('')}</div><div class="item-actions" style="margin-top:12px"><button type="button" data-shipping-edit="${shipment.id}">Update</button><button type="button" data-shipping-delete="${shipment.id}">Delete</button></div></article>`).join('') : '<p class="empty-state">No shipments created yet.</p>';
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', event => {
+      event.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if (username === 'steelboxservices@gmail.com' && password === 'Opendoors132') {
+        sessionStorage.setItem(authKey, 'authenticated');
+        document.getElementById('loginMessage').textContent = '';
+        showAdmin();
+      } else {
+        document.getElementById('loginMessage').textContent = 'Those credentials were not recognised.';
+      }
+    });
+
+    productForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const product = { id: editingId || `product-${Date.now()}`, name: document.getElementById('productName').value.trim(), type: document.getElementById('productType').value.trim(), price: Number(document.getElementById('productPrice').value), image: document.getElementById('productImage').value.trim(), alt: document.getElementById('productAlt').value.trim(), text: document.getElementById('productText').value.trim() };
+      products = editingId ? products.map(item => item.id === editingId ? product : item) : [...products, product];
+      saveProducts();
+      clearForm();
+      renderProducts();
+    });
+
+    inventoryList.addEventListener('click', event => {
+      const editId = event.target.dataset.edit;
+      const deleteId = event.target.dataset.delete;
+      if (editId) {
+        const product = products.find(item => item.id === editId);
+        editingId = product.id;
+        Object.entries(product).forEach(([key, value]) => { const field = document.getElementById(`product${key[0].toUpperCase()}${key.slice(1)}`); if (field) field.value = value; });
+        document.getElementById('formTitle').textContent = 'Edit this product.';
+        document.getElementById('saveButton').textContent = 'Save changes';
+        document.getElementById('cancelButton').hidden = false;
+      }
+      if (deleteId && confirm('Remove this product from the public collection?')) {
+        products = products.filter(item => item.id !== deleteId);
+        saveProducts();
+        renderProducts();
+      }
+    });
+
+    document.getElementById('cancelButton').addEventListener('click', clearForm);
+    shippingForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const now = new Date().toLocaleString();
+      const shipmentData = { reference: document.getElementById('shippingReference').value.trim(), label: document.getElementById('shippingLabel').value.trim(), carrier: document.getElementById('shippingCarrier').value.trim(), status: document.getElementById('shippingStatus').value.trim(), country: document.getElementById('shippingCountry').value, location: document.getElementById('shippingLocation').value.trim(), eta: document.getElementById('shippingEta').value, note: document.getElementById('shippingNote').value.trim() };
+      if (editingShipmentId) {
+        shipments = shipments.map(shipment => shipment.id === editingShipmentId ? { ...shipment, ...shipmentData, updates: [...shipment.updates, { note: shipmentData.note, date: now }] } : shipment);
+      } else {
+        shipments = [...shipments, { ...shipmentData, id: `shipment-${Date.now()}`, updates: [{ note: shipmentData.note, date: now }] }];
+      }
+      saveShipments();
+      clearShippingForm();
+      renderShipments();
+    });
+
+    shippingList.addEventListener('click', event => {
+      const editId = event.target.dataset.shippingEdit;
+      const deleteId = event.target.dataset.shippingDelete;
+      if (editId) {
+        const shipment = shipments.find(item => item.id === editId);
+        editingShipmentId = shipment.id;
+        document.getElementById('shippingReference').value = shipment.reference;
+        document.getElementById('shippingLabel').value = shipment.label;
+        document.getElementById('shippingCarrier').value = shipment.carrier;
+        document.getElementById('shippingStatus').value = shipment.status;
+        document.getElementById('shippingCountry').value = shipment.country || 'United States';
+        document.getElementById('shippingLocation').value = shipment.location;
+        document.getElementById('shippingEta').value = shipment.eta;
+        document.getElementById('shippingNote').value = '';
+        document.getElementById('shippingFormTitle').textContent = 'Update shipment.';
+        document.getElementById('shippingSaveButton').textContent = 'Add update';
+        document.getElementById('shippingCancelButton').hidden = false;
+      }
+      if (deleteId && confirm('Delete this shipment and its update history?')) {
+        shipments = shipments.filter(item => item.id !== deleteId);
+        saveShipments();
+        renderShipments();
+      }
+    });
+
+    document.getElementById('shippingCancelButton').addEventListener('click', clearShippingForm);
+    document.getElementById('shippingResetButton').addEventListener('click', () => { if (confirm('Delete all shipment records?')) { shipments = []; saveShipments(); clearShippingForm(); renderShipments(); } });
+    document.getElementById('contactForm').addEventListener('submit', event => { event.preventDefault(); const phone = document.getElementById('contactPhone').value.trim(); const email = document.getElementById('contactEmail').value.trim(); localStorage.setItem(contactKey, JSON.stringify({ phone, email })); document.getElementById('contactMessage').textContent = 'Contact details saved for the public site.'; });
+    document.querySelectorAll('[data-section]').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('[data-section]').forEach(item => item.classList.toggle('active', item === tab)); document.querySelectorAll('.admin-section').forEach(section => section.classList.toggle('active', section.id === `${tab.dataset.section}Section`)); }));
+    document.getElementById('shippingNav').addEventListener('click', () => { document.querySelector('[data-section="shipping"]').click(); });
+    document.getElementById('resetButton').addEventListener('click', () => { if (confirm('Restore the original product list?')) { products = [...defaultProducts]; saveProducts(); clearForm(); renderProducts(); } });
+    logoutButton.addEventListener('click', () => { sessionStorage.removeItem(authKey); window.location.href = 'index.html'; });
+    if (sessionStorage.getItem(authKey) === 'authenticated') showAdmin();
+  </script>
+  <script>document.body.insertAdjacentHTML('beforeend','<a class="whatsapp-button" href="https://wa.me/1541678675" target="_blank" rel="noopener" data-number="+1 541 678 675" aria-label="Message us on WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>');</script>
+<script>document.body.insertAdjacentHTML('beforeend','<a class="email-button" href="mailto:steelboxservices@gmail.com" data-email="steelboxservices@gmail.com" aria-label="Email us"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>');</script><script>function syncContactButtons(){const defaults={phone:'+1 541 678 675',email:'steelboxservices@gmail.com'};let contact=defaults;try{contact={...defaults,...(JSON.parse(localStorage.getItem('steelbox-contact-settings'))||{})}}catch(error){}const phone=String(contact.phone||defaults.phone);const email=String(contact.email||defaults.email);document.querySelectorAll('.whatsapp-button').forEach(button=>{button.href='https://wa.me/'+phone.replace(/\D/g,'');button.dataset.number=phone});document.querySelectorAll('.email-button').forEach(button=>{button.href='mailto:'+email+'?subject='+encodeURIComponent('SteelBox Container Inquiry')+'&body='+encodeURIComponent('Hello, I would like to learn more about your container products and services.');button.dataset.email=email})}syncContactButtons();</script></body>
+</html>

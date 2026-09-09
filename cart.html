@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cart | SteelBox Container Co.</title>
+    <link rel="stylesheet" href="inner.css" />
+    <style>
+      .cart-row { display:grid; grid-template-columns:90px 1fr auto; gap:16px; align-items:center; padding:16px 0; border-bottom:1px solid var(--line); }
+      .cart-row img { height:72px; }
+      .cart-row h3 { margin:0 0 7px; font-size:.95rem; }
+      .cart-row p { margin:0; color:var(--muted); font:500 .72rem 'DM Mono',monospace; }
+      .quantity { display:flex; align-items:center; gap:10px; margin-top:10px; }
+      .quantity button { display:grid; place-items:center; width:27px; height:27px; border:1px solid var(--line); color:var(--ink); background:transparent; font-size:1rem; line-height:1; }
+      .quantity button:hover { color:var(--gold); border-color:var(--gold); }
+      .quantity strong { min-width:20px; text-align:center; font:500 .78rem 'DM Mono',monospace; }
+      .line-total { color:var(--gold-soft); font:500 .78rem 'DM Mono',monospace; white-space:nowrap; }
+      .summary-line { display:flex; justify-content:space-between; gap:18px; padding:12px 0; border-bottom:1px solid var(--line); color:var(--muted); font-size:.8rem; }
+      .summary-line strong { color:var(--ink); font-family:'DM Mono',monospace; font-size:.78rem; }
+      .summary-line.total { padding-top:19px; border-bottom:0; color:var(--gold-soft); font-size:1rem; }
+      .summary-line.total strong { color:var(--gold-soft); font-size:1rem; }
+      .shipping-note { margin-top:18px; color:var(--muted); font-size:.7rem; line-height:1.55; }
+      @media (max-width:560px) { .cart-row { grid-template-columns:70px 1fr; } .cart-row .line-total { grid-column:2; } .cart-row img { height:60px; } }
+    </style>
+  </head>
+  <body>
+    <header class="topbar"><div class="wrap nav"><a class="brand" href="index.html"><span class="brand-mark">B</span> STEELBOX / CO.</a><nav class="nav-links"><a href="browse-stock.html">Browse Stock</a><a href="collection.html">Collection</a><a href="standard.html">The standard</a><a href="consultation.html">Consultation</a></nav><div class="nav-actions"><a class="icon-button" href="client-desk.html">CD</a><a class="icon-button" href="cart.html">CART <span class="cart-count">0</span></a></div></div></header>
+    <main>
+      <section class="page-hero"><div class="wrap"><span class="page-label">Your selection / reservation cart</span><h1>Space worth <em>reserving.</em></h1><p>Adjust quantities below. Shipping starts at $280 for one unit, then adds $200 for every additional unit.</p></div></section>
+      <section class="page-section"><div class="wrap two-col"><div class="panel"><span class="page-label">Selected units</span><div id="cartList" style="margin-top:16px"></div></div><div class="panel"><span class="page-label">Reservation summary</span><div class="summary-line" style="margin-top:18px"><span>Units</span><strong id="unitCount">0</strong></div><div class="summary-line"><span>Container subtotal</span><strong id="subtotal">$0</strong></div><div class="summary-line"><span>Shipping</span><strong id="shipping">$0</strong></div><div class="summary-line total"><span>Estimated total</span><strong id="total">$0</strong></div><p class="shipping-note">Shipping: $280 for the first selected unit, plus $200 for each additional unit.</p><a class="button" href="consultation.html" onclick="savePendingReservation()">Continue with consultation</a><a class="button button-ghost" href="browse-stock.html" style="margin-top:10px">Browse more stock</a></div></div></section>
+    </main>
+    <footer><div class="wrap footer-row"><a class="brand" href="index.html"><span class="brand-mark">B</span> STEELBOX / CO.</a><span>Steel, selected. Space, considered.</span><span><a href="return-refund-policy.html">Returns</a> / <a href="shipping-policy.html">Shipping</a> / <a href="privacy-policy.html">Privacy</a></span><span>Â© 2026 SteelBox Container Co.</span></div></footer>
+    <script>
+      const products = { '20ft':['20ft Standard',2150,'../containers.html/20ft container.jpg'], '40ft':['40ft Standard',3850,'../containers.html/40ft container.jpg'], '20cube':['20ft High Cube',3150,'../containers.html/20ft high cube.jpg'], cube:['40ft High Cube',4250,'../containers.html/40ft high cube.jpg'], reefer:['40ft Reefer',8900,'../containers.html/40ft reefer containers.jpg'], open:['20ft Open Side',4750,'../containers.html/20ft open sided container.jpg'], studio:['Office Studio',5900,'../containers.html/20ft office unit.jpg'] };
+      let cart = []; try { if (sessionStorage.getItem('steelbox-cart-active') === 'true') cart = JSON.parse(localStorage.getItem('steelbox-cart-v2') || '[]'); else localStorage.setItem('steelbox-cart-v2', '[]'); } catch (error) {}
+      const money = value => '$' + value.toLocaleString();
+      function savePendingReservation() { const quantities = {}; cart.filter(id => products[id]).forEach(id => { quantities[id] = (quantities[id] || 0) + 1; }); const items = Object.keys(quantities).map(id => ({ name: products[id][0], quantity: quantities[id], unitPrice: products[id][1], total: products[id][1] * quantities[id] })); const units = items.reduce((sum, item) => sum + item.quantity, 0); const subtotal = items.reduce((sum, item) => sum + item.total, 0); const shipping = units ? 280 + ((units - 1) * 200) : 0; localStorage.setItem('steelbox-pending-reservation', JSON.stringify({ status: 'Pending', items, units, subtotal, shipping, total: subtotal + shipping, createdAt: new Date().toISOString() })); }
+      function save() { try { localStorage.setItem('steelbox-cart-v2', JSON.stringify(cart)); } catch (error) {} }
+      function render() {
+        const quantities = {}; cart.forEach(id => { quantities[id] = (quantities[id] || 0) + 1; });
+        const ids = Object.keys(quantities).filter(id => products[id]); const units = cart.filter(id => products[id]).length;
+        const subtotal = ids.reduce((sum, id) => sum + products[id][1] * quantities[id], 0); const shipping = units ? 280 + ((units - 1) * 200) : 0;
+        document.getElementById('unitCount').textContent = units; document.getElementById('subtotal').textContent = money(subtotal); document.getElementById('shipping').textContent = money(shipping); document.getElementById('total').textContent = money(subtotal + shipping);
+        document.getElementById('cartList').innerHTML = ids.length ? ids.map(id => { const product = products[id]; const quantity = quantities[id]; return `<div class="cart-row"><img src="${product[2]}" alt="${product[0]}"><div><h3>${product[0]}</h3><p>${money(product[1])} each</p><div class="quantity"><button data-minus="${id}" aria-label="Decrease ${product[0]}">-</button><strong>${quantity}</strong><button data-plus="${id}" aria-label="Increase ${product[0]}">+</button></div></div><strong class="line-total">${money(product[1] * quantity)}</strong></div>`; }).join('') : '<p style="color:var(--muted)">Your selection is empty. Browse stock to begin.</p>';
+      }
+      document.getElementById('cartList').addEventListener('click', event => { const plus = event.target.closest('[data-plus]'); const minus = event.target.closest('[data-minus]'); if (plus) cart.push(plus.dataset.plus); if (minus) { const index = cart.indexOf(minus.dataset.minus); if (index !== -1) cart.splice(index, 1); } if (plus || minus) { save(); render(); } }); render();
+    </script>
+  <script>function updateCartCount(){let cart=[];try{cart=JSON.parse(localStorage.getItem('steelbox-cart-v2')||'[]')}catch(error){}document.querySelectorAll('.cart-count').forEach(count=>{count.textContent=cart.length})}updateCartCount();window.addEventListener('storage',updateCartCount);window.addEventListener('pageshow',updateCartCount);</script><script>document.body.insertAdjacentHTML('beforeend','<a class="whatsapp-button" href="https://wa.me/1541678675" target="_blank" rel="noopener" data-number="+1 541 678 675" aria-label="Message us on WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a>');</script><script>document.body.insertAdjacentHTML('beforeend','<a class="email-button" href="mailto:steelboxservices@gmail.com" data-email="steelboxservices@gmail.com" aria-label="Email us"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>');</script><script>function syncContactButtons(){const defaults={phone:'+1 541 678 675',email:'steelboxservices@gmail.com'};let contact=defaults;try{contact={...defaults,...(JSON.parse(localStorage.getItem('steelbox-contact-settings'))||{})}}catch(error){}const phone=String(contact.phone||defaults.phone);const email=String(contact.email||defaults.email);const subject=encodeURIComponent('SteelBox Container Inquiry');const body=encodeURIComponent('Hello, I would like to learn more about your container products and services.');document.querySelectorAll('.whatsapp-button').forEach(button=>{button.href='https://wa.me/'+phone.replace(/\D/g,'');button.dataset.number=phone});document.querySelectorAll('.email-button').forEach(button=>{button.href='mailto:'+email+'?subject='+subject+'&body='+body;button.dataset.email=email})}syncContactButtons();</script></body>
+</html>
