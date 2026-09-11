@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -100,7 +100,7 @@
             <div class="field"><label for="productName">PRODUCT NAME</label><input id="productName" required></div>
             <div class="field"><label for="productType">CATEGORY LABEL</label><input id="productType" placeholder="Everyday essential" required></div>
             <div class="field"><label for="productPrice">PRICE</label><input id="productPrice" type="number" min="0" step="50" required></div>
-            <div class="field"><label for="productImage">IMAGE PATH OR URL</label><input id="productImage" placeholder="../containers.html/20ft container.jpg" required></div>
+            <div class="field"><label for="productImage">IMAGE PATH OR URL</label><input id="productImage" placeholder="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=90" required></div>
             <div class="field"><label for="productAlt">IMAGE DESCRIPTION</label><input id="productAlt" required></div>
             <div class="field"><label for="productText">DESCRIPTION</label><textarea id="productText" required></textarea></div>
             <div class="admin-actions"><button class="button" type="submit" id="saveButton">Add product</button><button class="button button-muted" type="button" id="cancelButton" hidden>Cancel edit</button></div>
@@ -154,10 +154,10 @@
 
   <script>
     const defaultProducts = [
-      { id:'20ft', type:'Everyday essential', name:'20ft Standard', price:2150, image:'../containers.html/20ft container.jpg', alt:'Green standard shipping container', text:'A versatile footprint for secure storage, smaller sites, and practical ideas.' },
-      { id:'40ft', type:'Most requested', name:'40ft Standard', price:3850, image:'../containers.html/40ft container.jpg', alt:'Rows of large cargo containers', text:'More capacity for commercial inventory, equipment, stock, and ambitious builds.' },
-      { id:'cube', type:'Extra headroom', name:'40ft High Cube', price:4250, image:'../containers.html/40ft high cube.jpg', alt:'Blue high cube shipping container', text:'An extra foot of height for bulky goods, workshops, and comfortable fit-outs.' },
-      { id:'convert', type:'Made to order', name:'Converted Studio', price:5900, image:'../containers.html/20ft office unit.jpg', alt:'Modern converted container office', text:'A refined starting point for offices, kiosks, guest spaces, and tailored rooms.' }
+      { id:'20ft', type:'Everyday essential', name:'20ft Standard', price:2150, image:'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=90', alt:'Green standard shipping container', text:'A versatile footprint for secure storage, smaller sites, and practical ideas.' },
+      { id:'40ft', type:'Most requested', name:'40ft Standard', price:3850, image:'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=900&q=90', alt:'Rows of large cargo containers', text:'More capacity for commercial inventory, equipment, stock, and ambitious builds.' },
+      { id:'cube', type:'Extra headroom', name:'40ft High Cube', price:4250, image:'https://images.unsplash.com/photo-1565891741441-64926e441838?auto=format&fit=crop&w=900&q=90', alt:'Blue high cube shipping container', text:'An extra foot of height for bulky goods, workshops, and comfortable fit-outs.' },
+      { id:'convert', type:'Made to order', name:'Converted Studio', price:5900, image:'https://images.unsplash.com/photo-1590496793929-36417d3117de?auto=format&fit=crop&w=900&q=90', alt:'Modern converted container office', text:'A refined starting point for offices, kiosks, guest spaces, and tailored rooms.' }
     ];
     const productKey = 'steelbox-admin-products';
     const shippingKey = 'steelbox-admin-shipping';
